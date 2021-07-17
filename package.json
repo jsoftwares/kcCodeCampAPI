@@ -1,0 +1,28 @@
+{
+  "name": "kccodecampapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jsoftwares/kcCodeCampAPI.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jsoftwares/kcCodeCampAPI/issues"
+  },
+  "homepage": "https://github.com/jsoftwares/kcCodeCampAPI#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.13.2"
+  },
+  "devDependencies": {
+    "dotenv": "^10.0.0"
+  }
+}
