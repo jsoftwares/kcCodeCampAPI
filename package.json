@@ -20,7 +20,8 @@
   "homepage": "https://github.com/jsoftwares/kcCodeCampAPI#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "mongoose": "^5.13.2"
+    "mongoose": "^5.13.2",
+    "slugify": "^1.6.0"
   },
   "devDependencies": {
     "dotenv": "^10.0.0"
