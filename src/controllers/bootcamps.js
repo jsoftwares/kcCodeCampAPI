@@ -9,8 +9,15 @@ const asyncHandler = require('../middlewares/async-handle');
 // @access  Public
 exports.getBootcamps = asyncHandler(async (req, res, next) => {
     // try {    //asyncHandler helps avoid repeating try/catch code
-        const bootcamps = await Bootcamp.find();
-        res.status(200).json({success: true, count: bootcamps.length, data: bootcamps});  
+
+    let query;
+    let queryStr = JSON.stringify(req.query);
+    // adds $ in front of d mongoose aggregation fn in query tring read from URL so that we can pass it to find
+    queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
+    console.log(queryStr);
+    query = Bootcamp.find(JSON.parse(queryStr));
+    const bootcamps = await query;
+    res.status(200).json({success: true, count: bootcamps.length, data: bootcamps});  
     // } catch (err) {
     //     next(err);
     // }
