@@ -11,12 +11,45 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
     // try {    //asyncHandler helps avoid repeating try/catch code
 
     let query;
-    let queryStr = JSON.stringify(req.query);
-    // adds $ in front of d mongoose aggregation fn in query tring read from URL so that we can pass it to find
+
+    // Copy req.query
+    const reqQuery = { ...req.query };
+
+    // Fields to exclude from query string
+    const removeFields = ['select', 'sort'];
+
+    // Loop over removeFields to delete them from the received query strings; if left they would be treated by mongoose as fields
+    removeFields.forEach( param => delete reqQuery[param]);
+    
+    // Create Query String
+    let queryStr = JSON.stringify(reqQuery);
+    // adds $ in front of d mongoose operators in query string read from URL so that we can pass it to find()
     queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
-    console.log(queryStr);
+    
+    // Find resources
     query = Bootcamp.find(JSON.parse(queryStr));
+    
+    // Select Fields to return
+    if (req.query.select) {
+        // select query string should a comma separated fields; split() turns it to an array, then join converts
+        //it to a space separated strings.
+        const fields = req.query.select.split(',').join(' ');
+        query = query.select(fields);
+    }
+    
+    // Sort selected Resources by fields
+    if (req.query.sort) {
+        const sortBy = req.query.sort.split(',').join(' ');
+        query = query.sort(sortBy);
+    }else{
+        // if sort is not sent as part of query string we want to always sort by createdAt data. - = DESC
+        query = query.sort('-createdAt');
+    }
+    
+    console.log(reqQuery);
+    // Executing query
     const bootcamps = await query;
+
     res.status(200).json({success: true, count: bootcamps.length, data: bootcamps});  
     // } catch (err) {
     //     next(err);
