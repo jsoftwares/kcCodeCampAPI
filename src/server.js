@@ -22,7 +22,7 @@ app.use(errorHandler);
 const start = async () => {
     try {
         await mongoose.connect(process.env.MONGO_URI, {
-            useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, 
+            useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false
         });
         console.log('KCCodeCampAPI connected to MongoDB');
         app.listen(PORT, () => console.log('KCCodeCampAPI server is running on Port ', PORT ));
