@@ -103,11 +103,11 @@ const BootcampSchema = new mongoose.Schema({
         transform(doc, ret){
             ret.id = ret._id;
             delete ret._id;
-        }
-    }
-}
-
-);
+        },
+        virtuals: true, //for reverse population of Courses of Bootcamps with explicitlt adding a relationship 
+    },
+    toObject: { virtuals: true }
+});
 
 // Create bootcamp slug form name
 BootcampSchema.pre('save', function(next) {
@@ -134,5 +134,17 @@ BootcampSchema.pre('save', async function(next) {
   
   next();
 });
+
+// Reverse populate with virtuals
+/**1st argument 'courses' is d name we want to return d field we're adding as virtuals as when we get bootcamp(s)
+ * it could be called anything, ref: a reference to d model we're going to be using, localField: d field in this
+ * model to match in d reference model, foreignField: d field in d Course model that matched with _id in this
+ * model, justOne: to false ensure we're getting an array of Courses &not just one Course  */
+BootcampSchema.virtual('courses', {
+  ref: 'Course',
+  localField: '_id',
+  foreignField: 'bootcamp',
+  justOne: false
+})
 
 module.exports = mongoose.model('Bootcamp', BootcampSchema);
