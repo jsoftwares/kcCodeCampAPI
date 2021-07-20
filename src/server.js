@@ -2,7 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv').config({path: './.env'});
 
-const bootcampsRoutes = require('./routes/bootcamps');
+const bootcampRouter = require('./routes/bootcamps');
+const courseRouter = require('./routes/courses');
 const errorHandler = require('./middlewares/error-handler');
 
 const PORT = process.env.PORT || 3000; 
@@ -12,7 +13,8 @@ const app = express();
 app.use(express.json());
 
 // Routes 
-app.use('/api/v1/bootcamps', bootcampsRoutes);
+app.use('/api/v1/bootcamps', bootcampRouter);
+app.use('/api/v1/courses', courseRouter);
 
 // Middleware
 app.use(errorHandler);
