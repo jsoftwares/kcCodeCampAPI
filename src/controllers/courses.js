@@ -58,3 +58,21 @@ exports.addCourse = asyncHandler(async (req, res, next) => {
 
     res.status(200).json({success: true, data: course});  
 });
+
+
+// @desc    Update course
+// @route   PUT /api/v1/courses/:id
+// @access  Private
+exports.updateCourse = asyncHandler(async (req, res, next) => {
+
+    const course = await Course.findById(req.params.id);
+    if (!course) {
+        return next(new ErrorResponse(`No Course with the ID ${req.params.id}`, 404));
+    }
+
+    // with this way we also ensure {new: true, runValidators: true} are invoked just as in findByIdAndUpdate()
+    course.set(req.body);
+    await course.save();
+
+    res.status(200).json({success: true, data: course});  
+});
