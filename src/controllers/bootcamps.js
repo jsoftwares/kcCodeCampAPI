@@ -127,7 +127,7 @@ exports.updateBootcamp = asyncHandler(async (req, res, next) => {
         });
     
         if (!bootcamp) {
-            throw new Error('Bootcamp not found');
+            return next(new ErrorResponse('Bootcamp not found', 404));
         }
         
         res.status(200).json({success: true, data: bootcamp}); 
@@ -146,7 +146,7 @@ exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
         if (!bootcamp) {
             throw new Error('Bootcamp not found');
         }
-        
+
         bootcamp.remove();
         
         res.status(200).json({success: true, data: {} });
