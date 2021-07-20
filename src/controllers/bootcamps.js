@@ -18,7 +18,7 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
     // Fields to exclude from query string
     const removeFields = ['select', 'sort', 'page', 'limit'];
 
-    // Loop over removeFields to delete them from the received query strings; if left they would be treated by mongoose as fields
+    // Loop over removeFields to delete them from d received query strings; if left they would be treated by mongoose as fields
     removeFields.forEach( param => delete reqQuery[param]);
     
     // Create Query String
@@ -31,8 +31,8 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
     
     // Select Fields to return
     if (req.query.select) {
-        // select query string should a comma separated fields; split() turns it to an array, then join converts
-        //it to a space separated strings.
+        // select query string should a comma separated fields; split() turns it to an array of strings, 
+        //then join converts it to a space separated strings.
         const fields = req.query.select.split(',').join(' ');
         query = query.select(fields);
     }
@@ -140,11 +140,14 @@ exports.updateBootcamp = asyncHandler(async (req, res, next) => {
 // @access  Private
 exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
 
-        const bootcamp = await Bootcamp.findByIdAndDelete(req.params.id);
+        // const bootcamp = await Bootcamp.findByIdAndDelete(req.params.id);
+        const bootcamp = await Bootcamp.findById(req.params.id);
     
         if (!bootcamp) {
             throw new Error('Bootcamp not found');
         }
+        
+        bootcamp.remove();
         
         res.status(200).json({success: true, data: {} });
 

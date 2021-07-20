@@ -135,6 +135,15 @@ BootcampSchema.pre('save', async function(next) {
   next();
 });
 
+// Casecade delete related Courses when a Bootcamp is deleted - using mongoose PRE middleware
+// NOTE findByIdAndDelete() will not trigger this middleware instead use remove() in controller
+BootcampSchema.pre('remove', async function(next) {
+  console.log(`Courses being deleted for bootcamps ${this._id}`);
+  //this.model() is an alternative to importing in Course model here
+  await this.model('Course').deleteMany({ bootcamp: this._id });
+  next();
+});
+
 // Reverse populate with virtuals
 /**1st argument 'courses' is d name we want to return d field we're adding as virtuals as when we get bootcamp(s)
  * it could be called anything, ref: a reference to d model we're going to be using, localField: d field in this
