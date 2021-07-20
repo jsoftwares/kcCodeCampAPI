@@ -6,7 +6,8 @@ const courseRouter = require('./courses');
 
 const router = express.Router();
 
-// Re-route into other resource router(rather than bringing d getCourse controller in here, we just pass d request to d course router)
+// Re-route/Forward into other resource router
+    /** eg (rather than bringing d getCourse controller in here, we just pass d request to d course router) */
 router.use('/:bootcampId/courses', courseRouter);
 
 router.route('/')
