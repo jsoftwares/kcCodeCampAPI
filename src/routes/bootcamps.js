@@ -4,6 +4,9 @@ const { getBootcamps, getBootcamp, createBootcamp, updateBootcamp, deleteBootcam
 // Include other resource routers
 const courseRouter = require('./courses');
 
+const Bootcamp = require('../models/Bootcamp');
+const advanceResultsFilter = require('../middlewares/advance-results-filter');
+
 const router = express.Router();
 
 // Re-route/Forward into other resource router
@@ -11,7 +14,7 @@ const router = express.Router();
 router.use('/:bootcampId/courses', courseRouter);
 
 router.route('/')
-    .get(getBootcamps)
+    .get(advanceResultsFilter(Bootcamp, 'courses'), getBootcamps)
     .post(createBootcamp);
 
 router.route('/:id')

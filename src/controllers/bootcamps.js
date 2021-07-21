@@ -11,77 +11,9 @@ const asyncHandler = require('../middlewares/async-handle');
 exports.getBootcamps = asyncHandler(async (req, res, next) => {
     // try {    //asyncHandler helps avoid repeating try/catch code
 
-    let query;
-
-    // Copy req.query
-    const reqQuery = { ...req.query };
-
-    // Fields to exclude from query string
-    const removeFields = ['select', 'sort', 'page', 'limit'];
-
-    // Loop over removeFields to delete them from d received query strings; if left they would be treated by mongoose as fields
-    removeFields.forEach( param => delete reqQuery[param]);
-    
-    // Create Query String
-    let queryStr = JSON.stringify(reqQuery);
-    // adds $ in front of d mongoose operators in query string read from URL so that we can pass it to find()
-    queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
-    
-    // Find resources
-    query = Bootcamp.find(JSON.parse(queryStr)).populate('courses');
-    
-    // Select Fields to return
-    if (req.query.select) {
-        // select query string should a comma separated fields; split() turns it to an array of strings, 
-        //then join converts it to a space separated strings.
-        const fields = req.query.select.split(',').join(' ');
-        query = query.select(fields);
-    }
-    
-    // Sort selected Resources by fields
-    if (req.query.sort) {
-        const sortBy = req.query.sort.split(',').join(' ');
-        query = query.sort(sortBy);
-    }else{
-        // if sort is not sent as part of query string we want to always sort by createdAt data. - = DESC
-        query = query.sort('-createdAt');
-    }
-
-    // Pagination
-    /** page received will be string so parseInt cast it to integer. 10 is d radix (base number). if page is not 
-     * part of query string, we default it to 1
-     */
-    const page = parseInt(req.query.page, 10) || 1;
-    const limit = parseInt(req.query.limit, 10) || 100;
-    const startIndex = (page -1) * limit;
-    const endIndex = page * limit;
-    const total = await Bootcamp.countDocuments();
-    query = query.skip(startIndex).limit(limit);
-    
-    
-    console.log(reqQuery);
-    // Executing query
-    const bootcamps = await query;
-
-
-    // Pagination result
-    const pagination = {};
-
-    if (endIndex < total) {
-        pagination.next = {
-            page: page + 1,
-            limit
-        }
-    }
-
-    if (startIndex > 0) {
-        pagination.prev = {
-            page: page -1,
-            limit
-        }
-    }
-
-    res.status(200).json({success: true, total, count: bootcamps.length, pagination, data: bootcamps});  
+    // we have access to advanceResults bcos d middleware adds d object to RES & d route that implements this
+    // request handler uses this middleware
+    res.status(200).json(res.advanceResults);  
     // } catch (err) {
     //     next(err);
     // }
