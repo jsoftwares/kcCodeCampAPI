@@ -1,5 +1,7 @@
+const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
+const fileupload = require('express-fileupload');
 const dotenv = require('dotenv').config({path: './.env'});
 
 const bootcampRouter = require('./routes/bootcamps');
@@ -11,6 +13,11 @@ const app = express();
 
 // Body parser
 app.use(express.json());
+
+// File uploading
+app.use(fileupload());
+// Set static folder
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // Routes 
 app.use('/api/v1/bootcamps', bootcampRouter);
