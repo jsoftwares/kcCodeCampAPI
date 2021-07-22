@@ -3,11 +3,11 @@ const express = require('express');
 const mongoose = require('mongoose');
 const fileupload = require('express-fileupload');
 const dotenv = require('dotenv').config({path: './.env'});
-
+const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
 const bootcampRouter = require('./routes/bootcamps');
 const courseRouter = require('./routes/courses');
 const authRouter = require('./routes/auth');
-
 const errorHandler = require('./middlewares/error-handler');
 
 const PORT = process.env.PORT || 3000; 
@@ -15,6 +15,14 @@ const app = express();
 
 // Body parser
 app.use(express.json());
+
+// Cookie parser middleware
+app.use(cookieParser());
+
+// Dev logging middleware
+if (process.env.NODE_ENV === 'development') {
+    app.use(morgan('dev'));
+}
 
 // File uploading
 app.use(fileupload());
