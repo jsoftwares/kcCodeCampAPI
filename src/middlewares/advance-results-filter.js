@@ -13,7 +13,7 @@ const advanceResultsFilter = (model, populate) => async (req, res, next) => {
     
     // Create Query String
     let queryStr = JSON.stringify(reqQuery);    //eg { house: 'true', 'location.state': 'MA' }
-    // adds $ in front of d mongoose operators in query string read from URL so that we can pass it to find()
+    // prepend $ on mongoose operators in query string read from URL so that we can pass it to find()
     queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
     
     // Find resources
@@ -22,7 +22,7 @@ const advanceResultsFilter = (model, populate) => async (req, res, next) => {
     // Select Fields to return
     if (req.query.select) {
         // select query string should a comma separated fields; split() turns it to an array of strings, 
-        //then join converts it to a space separated strings.
+        //then join() converts it to a space separated strings.
         const fields = req.query.select.split(',').join(' ');
         query = query.select(fields);
     }
@@ -41,7 +41,7 @@ const advanceResultsFilter = (model, populate) => async (req, res, next) => {
      * part of query string, we default it to 1
      */
     const page = parseInt(req.query.page, 10) || 1;
-    const limit = parseInt(req.query.limit, 10) || 100;
+    const limit = parseInt(req.query.limit, 10) || 25;
     const startIndex = (page -1) * limit;
     const endIndex = page * limit;
     const total = await model.countDocuments();

@@ -17,8 +17,8 @@ const { protect, authorize } = require('../middlewares/auth');
 router.use('/:bootcampId/courses', courseRouter);
 
 router.route('/')
-.get(advanceResultsFilter(Bootcamp, 'courses'), getBootcamps)
-.post(protect, authorize('admin', 'publisher'), createBootcamp);
+    .get(advanceResultsFilter(Bootcamp, 'courses'), getBootcamps)
+    .post(protect, authorize('admin', 'publisher'), createBootcamp);
 
 router.route('/:id/photo').put(protect, authorize('admin', 'publisher'), bootcampPhotoUpload);
 

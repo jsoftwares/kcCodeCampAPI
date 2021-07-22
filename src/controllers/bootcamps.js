@@ -11,7 +11,7 @@ const asyncHandler = require('../middlewares/async-handle');
 exports.getBootcamps = asyncHandler(async (req, res, next) => {
     // try {    //asyncHandler helps avoid repeating try/catch code
 
-    // we have access to advanceResults bcos d middleware adds d object to RES & d route that implements this
+    // we have access to advanceResults bcos d middleware adds it as an object to RES & d route that implements this
     // request handler uses this middleware
     res.status(200).json(res.advanceResults);  
     // } catch (err) {
@@ -38,10 +38,19 @@ exports.getBootcamp = asyncHandler(async (req, res, next) => {
 // @access  Private
 exports.createBootcamp = asyncHandler(async (req, res, next) => {
     
-        // console.log(req.body);
-        const bootcamp = new Bootcamp(req.body);
-        await bootcamp.save();
-        res.status(201).send({
+        // Add user ID to req.body
+        req.body.user = req.user.id;
+
+        // Check for published Bootcamp ie if there user already has a Bootcamp
+        const publishedBootcamp = !!await Bootcamp.findOne({user: req.user.id});
+
+        // If d request user is not an admin, they can only create one Bootcamp
+        if (publishedBootcamp && req.user.role !== 'admin') {
+            return next(new ErrorResponse(`User with ID ${req.user.id} has already published a bootcamp`, 400));
+        }
+
+        const bootcamp = await Bootcamp.create(req.body);
+        res.status(201).json({
             success: true, 
             data: bootcamp
         });
@@ -54,14 +63,21 @@ exports.createBootcamp = asyncHandler(async (req, res, next) => {
 // @access  Private
 exports.updateBootcamp = asyncHandler(async (req, res, next) => {
     
-        const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,  //when we send response, we want d data to be d updated bootcamp
-            runValidators: true //we want to run our mongoose validators on updates 
-        });
+        let bootcamp = await Bootcamp.findById(req.params.id);
     
         if (!bootcamp) {
             return next(new ErrorResponse('Bootcamp not found', 404));
         }
+
+        // Make sure request user is bootcamp owner
+        if (bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin') {
+            return next(new ErrorResponse('User is unauthorized to perform this action', 401));
+        }
+
+        bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,  //when we send response, we want d data to be d updated bootcamp
+            runValidators: true //we want to run our mongoose validators on updates
+        });
         
         res.status(200).json({success: true, data: bootcamp}); 
 
@@ -78,6 +94,11 @@ exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
     
         if (!bootcamp) {
             throw new Error('Bootcamp not found');
+        }
+
+        // Make sure request user is bootcamp owner
+        if (bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin') {
+            return next(new ErrorResponse('User is unauthorized to perform this action', 401));
         }
 
         bootcamp.remove();
@@ -124,6 +145,11 @@ exports.bootcampPhotoUpload = asyncHandler(async (req, res, next) => {
 
     if (!bootcamp) {
         return next(new ErrorResponse('Bootcamp not found', 404));
+    }
+
+    // Make sure request user is bootcamp owner
+    if (bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin') {
+        return next(new ErrorResponse('User is unauthorized to perform this action', 401));
     }
 
     if (!req.files) {

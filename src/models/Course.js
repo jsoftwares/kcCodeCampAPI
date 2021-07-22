@@ -45,10 +45,10 @@ const CourseSchema = new mongoose.Schema({
 
 // Static method to get average of course tuitions
 /**We create an aggregated obj. by calling AGGREGATE() which returns a promise on the model. AGGREGATE() takes
- * and array of pipeline steps. obj is will be an array of one object with _id & averageCost of tuition
+ * and array of pipeline steps. obj will be an array of one object with _id & averageCost of tuition
  * First we match d bootcamp field with what bootcampId is passed to this function. Next we use group to create d
  * calculated object we want to create which included d _id: which is d bootcampId, & d averageCost which we can 
- * get with the $AVG operator as key & d field (tuition) we can to calculate average on as value
+ * get with the $AVG operator as key & d field (tuition) we can to calculate average on, as value
   */
 CourseSchema.statics.getAverageCost = async function(bootcampId) {
     const obj = await this.aggregate([

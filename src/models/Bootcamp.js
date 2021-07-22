@@ -96,15 +96,20 @@ const BootcampSchema = new mongoose.Schema({
         type: Boolean,
         default: false
       },
+      user: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+        required: true
+      }
 }, 
 {
     timestamps: true,
     toJSON: {
-        transform(doc, ret){
+      virtuals: true, //for reverse population of Courses of a Bootcamp without explicitly adding a relationship
+      transform(doc, ret){
             ret.id = ret._id;
             delete ret._id;
-        },
-        virtuals: true, //for reverse population of Courses of Bootcamps with explicitlt adding a relationship 
+      },
     },
     toObject: { virtuals: true }
 });
