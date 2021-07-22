@@ -48,10 +48,16 @@ exports.addCourse = asyncHandler(async (req, res, next) => {
 
     // Mannual create a bootcamp request body field for d new course bcos Course requires/belongs to a bootcamp
     req.body.bootcamp = req.params.bootcampId;
+    req.body.user = req.user.id;
 
     const bootcamp = await Bootcamp.findById(req.params.bootcampId);
     if (!bootcamp) {
         return next(new ErrorResponse(`No bootcamp with the ID ${req.params.bootcampId}`, 404));
+    }
+
+    // Ensure request user is bootcamp owner
+    if (bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin') {
+        return next(new ErrorResponse('User is unauthorized to perform this action', 401));
     }
 
     const course = await Course.create(req.body);
@@ -70,6 +76,11 @@ exports.updateCourse = asyncHandler(async (req, res, next) => {
         return next(new ErrorResponse(`No Course with the ID ${req.params.id}`, 404));
     }
 
+    // Ensure request user is course owner
+    if (course.user.toString() !== req.user.id && req.user.role !== 'admin') {
+        return next(new ErrorResponse('User is unauthorized to perform this action', 401));
+    }
+
     // with this way we also ensure {new: true, runValidators: true} are invoked just as in findByIdAndUpdate()
     course.set(req.body);
     await course.save();
@@ -86,6 +97,11 @@ exports.deleteCourse = asyncHandler(async (req, res, next) => {
     const course = await Course.findById(req.params.id);
     if (!course) {
         return next(new ErrorResponse(`No Course with the ID ${req.params.id}`, 404));
+    }
+
+    // Ensure request user is course owner
+    if (course.user.toString() !== req.user.id && req.user.role !== 'admin') {
+        return next(new ErrorResponse('User is unauthorized to perform this action', 401));
     }
 
     await course.remove();
