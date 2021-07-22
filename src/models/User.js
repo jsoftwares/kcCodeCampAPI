@@ -42,6 +42,11 @@ UserSchema.pre('save', async function(next) {
     next();
 });
 
+// Compare user entered password to hashed password in DB
+UserSchema.methods.comparePassword = async function(enteredPassword) {
+    return await bcrypt.compare(enteredPassword, this.password);   
+}
+
 // Sign JWT and return
 UserSchema.methods.getSignedJwtToken = function() {
     try {
@@ -52,5 +57,6 @@ UserSchema.methods.getSignedJwtToken = function() {
         throw new Error(error.message);
     }
 };
+
 
 module.exports = mongoose.model('User', UserSchema);
