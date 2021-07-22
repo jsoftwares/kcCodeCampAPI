@@ -6,6 +6,8 @@ const dotenv = require('dotenv').config({path: './.env'});
 
 const bootcampRouter = require('./routes/bootcamps');
 const courseRouter = require('./routes/courses');
+const authRouter = require('./routes/auth');
+
 const errorHandler = require('./middlewares/error-handler');
 
 const PORT = process.env.PORT || 3000; 
@@ -22,6 +24,7 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 // Routes 
 app.use('/api/v1/bootcamps', bootcampRouter);
 app.use('/api/v1/courses', courseRouter);
+app.use('/api/v1/auth', authRouter);
 
 // Middleware
 app.use(errorHandler);
