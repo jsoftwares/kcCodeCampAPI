@@ -5,10 +5,12 @@ const fileupload = require('express-fileupload');
 const dotenv = require('dotenv').config({path: './.env'});
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
-const bootcampRouter = require('./routes/bootcamps');
-const courseRouter = require('./routes/courses');
-const authRouter = require('./routes/auth');
 const errorHandler = require('./middlewares/error-handler');
+
+const bootcampsRouter = require('./routes/bootcamps');
+const coursesRouter = require('./routes/courses');
+const authRouter = require('./routes/auth');
+const usersRouter = require('./routes/users');
 
 const PORT = process.env.PORT || 3000; 
 const app = express();
@@ -30,9 +32,10 @@ app.use(fileupload());
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // Routes 
-app.use('/api/v1/bootcamps', bootcampRouter);
-app.use('/api/v1/courses', courseRouter);
+app.use('/api/v1/bootcamps', bootcampsRouter);
+app.use('/api/v1/courses', coursesRouter);
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/users', usersRouter);
 
 // Middleware
 app.use(errorHandler);

@@ -1,9 +1,9 @@
 const express = require('express');
 const { getCourses, getCourse, addCourse, updateCourse, deleteCourse } = require('../controllers/courses');
 const Course = require('../models/Course');
-const advanceResultsFilter = require('../middlewares/advance-results-filter');
 const router = express.Router({ mergeParams: true }); //mergeParams ensure d req we transfer from bootcamp router works
-// Middleware
+// Middlewares
+const advanceResultsFilter = require('../middlewares/advance-results-filter');
 const { protect, authorize } = require('../middlewares/auth');
 
 router.route('/')
