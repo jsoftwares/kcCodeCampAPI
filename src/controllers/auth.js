@@ -85,8 +85,10 @@ exports.forgotPassword = asyncHandler( async (req, res, next) => {
 
     // Create reset URL
     const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/auth/resetpassword/${resetToken}`;
+    const recipientName = user.name ? user.name : 'User';
     const message = `<h4 style='text-align:center'>Password Reset</h4>
-        <p>You are recieving email this because you (or someone else) has requested a password request for 
+        <p><strong>Dear ${recipientName}</strong></p>
+        <p>You are recieving this email because you (or someone else) has requested a password request for 
         your account.</p>
         <p>Please make a PUT request to: </p>
         ${resetUrl}`;
@@ -132,6 +134,49 @@ exports.resetPassword = asyncHandler( async (req, res, next) => {
 
     sendTokenResponse(user, 200, res);
 });
+
+
+// @desc    Update logged user details
+// @route   PUT /api/v1/auth/changepassword
+// @access  Private
+
+exports.updateUserDetails = asyncHandler( async (req, res, next) => {
+    const {name, email } = req.body;
+
+    const fieldsToUpdate = {};
+    if (name) {
+        fieldsToUpdate.name = name.toUpperCase();
+    }
+    if (email) {
+        fieldsToUpdate.email = email.toLowerCase();
+    }
+    
+    const user = await User.findByIdAndUpdate(req.user.id, fieldsToUpdate, {
+        new: true,
+        runValidators: true
+    });
+
+    res.status(200).json({success: true, data: user});
+});
+
+exports.changePassword = asyncHandler( async (req, res, next) => {
+    
+    const user = await User.findById(req.user.id).select('+password');
+
+    // Check that value of currentPassword field matches DB password
+    if (!(await user.comparePassword(req.body.currentPassword))) {
+        return next(new ErrorResponse('Password is incorrect', 401))
+    }
+
+    user.password = req.body.newPassword;
+    await user.save();
+
+    sendTokenResponse(user, 200, res);
+});
+
+
+
+
 
 // Helper to  Get token from model, create cookie and send response
 const sendTokenResponse = (user, statusCode,res) => {
