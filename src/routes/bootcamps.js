@@ -5,14 +5,16 @@ const Bootcamp = require('../models/Bootcamp');
 const { protect, authorize } = require('../middlewares/auth');
 const advanceResultsFilter = require('../middlewares/advance-results-filter');
 // Include other resource routers
-const courseRouter = require('./courses');
+const coursesRouter = require('./courses');
+const reviewsRouter = require('./reviews');
 
 
 const router = express.Router();
 
 // Re-route/Forward into other resource router
     /** eg (rather than bringing d getCourse controller in here, we just pass d request to d course router) */
-router.use('/:bootcampId/courses', courseRouter);
+router.use('/:bootcampId/courses', coursesRouter);
+router.use('/:bootcampId/reviews', reviewsRouter);
 
 router.route('/')
     .get(advanceResultsFilter(Bootcamp, 'courses'), getBootcamps)

@@ -11,6 +11,7 @@ const bootcampsRouter = require('./routes/bootcamps');
 const coursesRouter = require('./routes/courses');
 const authRouter = require('./routes/auth');
 const usersRouter = require('./routes/users');
+const reviewsRouter = require('./routes/reviews');
 
 const PORT = process.env.PORT || 3000; 
 const app = express();
@@ -36,6 +37,7 @@ app.use('/api/v1/bootcamps', bootcampsRouter);
 app.use('/api/v1/courses', coursesRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', usersRouter);
+app.use('/api/v1/reviews', reviewsRouter);
 
 // Middleware
 app.use(errorHandler);
