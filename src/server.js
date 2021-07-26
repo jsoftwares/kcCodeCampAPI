@@ -1,10 +1,15 @@
 const path = require('path');
 const express = require('express');
+const helmet = require("helmet");
+const xss = require('xss-clean');
+const rateLimiter = require('express-rate-limit');
+const hpp = require('hpp');
 const mongoose = require('mongoose');
 const fileupload = require('express-fileupload');
 const dotenv = require('dotenv').config({path: './.env'});
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
+const mongoSanitize = require('express-mongo-sanitize');
 const errorHandler = require('./middlewares/error-handler');
 
 const bootcampsRouter = require('./routes/bootcamps');
@@ -15,6 +20,22 @@ const reviewsRouter = require('./routes/reviews');
 
 const PORT = process.env.PORT || 3000; 
 const app = express();
+
+// Set security headers
+app.use(helmet());
+
+// Prevent XSS attack
+app.use(xss());
+
+// Rate limiting
+const limiter = rateLimiter({
+    windowMs: 10 * 60 * 1000,  //10 minutes
+    max: 100
+});
+app.use(limiter);
+
+// Prevent HTTP Parameter Pollution attacks
+app.use(hpp()); 
 
 // Body parser
 app.use(express.json());
@@ -29,6 +50,10 @@ if (process.env.NODE_ENV === 'development') {
 
 // File uploading
 app.use(fileupload());
+
+// Sanitize data/prevent NoSQL Injection
+app.use(mongoSanitize());
+
 // Set static folder
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
