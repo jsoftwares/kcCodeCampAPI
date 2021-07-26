@@ -4,6 +4,7 @@ const helmet = require("helmet");
 const xss = require('xss-clean');
 const rateLimiter = require('express-rate-limit');
 const hpp = require('hpp');
+const cors = require('cors');
 const mongoose = require('mongoose');
 const fileupload = require('express-fileupload');
 const dotenv = require('dotenv').config({path: './.env'});
@@ -36,6 +37,9 @@ app.use(limiter);
 
 // Prevent HTTP Parameter Pollution attacks
 app.use(hpp()); 
+
+// Enable CORS
+app.use(cors());
 
 // Body parser
 app.use(express.json());
