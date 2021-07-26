@@ -69,7 +69,7 @@ CourseSchema.statics.getAverageCost = async function(bootcampId) {
     }
     ]);
     console.log(obj);
-    // Update the bootcamp in database
+    // Update the bootcamp in database & add averageCost as a field
     try {
         await this.model('Bootcamp').findByIdAndUpdate(bootcampId, {
             averageCost: Math.ceil(obj[0].averageCost / 10) * 10 //(/10)/10) ensures we get an integer 
