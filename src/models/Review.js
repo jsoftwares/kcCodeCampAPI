@@ -15,7 +15,7 @@ const ReviewSchema = new mongoose.Schema({
     rating: {
         type: Number,
         min: [1, 'Rating can only be between 1 and 10'],
-        max: [1, 'Rating can only be between 1 and 10'],
+        max: [10, 'Rating can only be between 1 and 10'],
         required: [true, 'Please add a rating between 1 and 10']
     },
     bootcamp: {

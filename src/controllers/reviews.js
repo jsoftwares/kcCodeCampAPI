@@ -23,11 +23,14 @@ exports.getReviews = asyncHandler(async (req, res, next) => {
 // @desc    Get a single reviews
 // @route   GET /api/v1/reviews/:id
 // @access  Public
-exports.getReviews = asyncHandler(async (req, res, next) => {
+exports.getReview = asyncHandler(async (req, res, next) => {
 
-    const review = await Review.findById(req.params.bootcampId);
+    const review = await Review.findById(req.params.id).populate({
+        path: 'bootcamp',
+        select: 'name description'
+    });
     if (!review) {
-        return next(new ErrorResponse('Review not found', 404));
+        return next(new ErrorResponse('Review was not found', 404));
     }
     
     return res.status(200).json({success: true, data: review});  
